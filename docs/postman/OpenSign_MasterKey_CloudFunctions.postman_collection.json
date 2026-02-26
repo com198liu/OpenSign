@@ -1,13 +1,74 @@
 {
   "info": {
     "name": "OpenSign Master Key API (Parse Cloud Functions)",
-    "_postman_id": "595ce4e8-20f6-4874-b188-f4ca8de1d8b7",
-    "description": "Master Key calls for Parse Cloud Functions. IMPORTANT: use parseBaseUrl with Parse mount path, not frontend URL. Example: https://app.opensignlabs.com/api/app .",
+    "_postman_id": "9c2f02cf-e467-4275-baf1-821250357b7a",
+    "description": "IMPORTANT ORDER: (1) run health-check, (2) if needed run loginuser and set sessionToken, (3) call business functions. parseBaseUrl MUST include Parse mount path, e.g. https://your-host/api/app or http://localhost:8080/app",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Cloud Functions (Master Key)",
+      "name": "00-Start-Here",
+      "item": [
+        {
+          "name": "health-check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              }
+            ],
+            "url": "{{parseBaseUrl}}/health",
+            "description": "Should return JSON from Parse. If you still get HTML, parseBaseUrl is wrong or reverse proxy does not expose Parse mount."
+          },
+          "response": []
+        },
+        {
+          "name": "loginuser",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/loginuser",
+            "description": "Login to get user context; copy `result.sessionToken` to collection variable `sessionToken`. Some business APIs require user session in header `sessiontoken`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "01-Cloud-Functions",
       "item": [
         {
           "name": "signPdf",
@@ -25,19 +86,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/signPdf",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "signPdf"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/signPdf",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -61,19 +123,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/sendmailv3",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "sendmailv3"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/sendmailv3",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -97,19 +160,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/usersignup",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "usersignup"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/usersignup",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -133,19 +197,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/SendOTPMailV1",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "SendOTPMailV1"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/SendOTPMailV1",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -169,19 +234,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/AuthLoginAsMail",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "AuthLoginAsMail"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/AuthLoginAsMail",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -205,19 +271,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/getUserId",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "getUserId"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/getUserId",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -241,19 +308,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/getUserDetails",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "getUserDetails"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/getUserDetails",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -277,19 +345,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/getDocument",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "getDocument"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/getDocument",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -313,19 +382,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/getDrive",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "getDrive"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/getDrive",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -349,19 +419,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/getReport",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "getReport"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/getReport",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -385,19 +456,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/getTemplate",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "getTemplate"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/getTemplate",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -421,19 +493,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/verifyemail",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "verifyemail"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/verifyemail",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -457,19 +530,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/getsignedurl",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "getsignedurl"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/getsignedurl",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -493,19 +567,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/batchdocuments",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "batchdocuments"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/batchdocuments",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -529,19 +604,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/linkcontacttodoc",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "linkcontacttodoc"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/linkcontacttodoc",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -565,19 +641,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/isextenduser",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "isextenduser"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/isextenduser",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -601,19 +678,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/getlogobydomain",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "getlogobydomain"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/getlogobydomain",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -637,19 +715,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/addadmin",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "addadmin"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/addadmin",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -673,19 +752,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/checkadminexist",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "checkadminexist"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/checkadminexist",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -709,19 +789,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/updateuserasadmin",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "updateuserasadmin"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/updateuserasadmin",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -745,19 +826,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/newsletter",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "newsletter"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/newsletter",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -781,19 +863,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/getteams",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "getteams"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/getteams",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -817,19 +900,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/getcontact",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "getcontact"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/getcontact",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -853,19 +937,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/updatecontacttour",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "updatecontacttour"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/updatecontacttour",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -889,19 +974,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/declinedoc",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "declinedoc"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/declinedoc",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -925,19 +1011,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/gettenant",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "gettenant"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/gettenant",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -961,19 +1048,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/getsigners",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "getsigners"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/getsigners",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -997,19 +1085,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/savefile",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "savefile"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/savefile",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1033,19 +1122,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/savecontact",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "savecontact"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/savecontact",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1069,19 +1159,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/isuserincontactbook",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "isuserincontactbook"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/isuserincontactbook",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1105,19 +1196,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/updatetourstatus",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "updatetourstatus"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/updatetourstatus",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1141,19 +1233,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/updatesignaturetype",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "updatesignaturetype"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/updatesignaturetype",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1177,19 +1270,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/updatepreferences",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "updatepreferences"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/updatepreferences",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1213,19 +1307,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/createduplicate",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "createduplicate"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/createduplicate",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1249,19 +1344,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/createbatchcontact",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "createbatchcontact"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/createbatchcontact",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1285,19 +1381,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/generatecertificate",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "generatecertificate"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/generatecertificate",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1321,19 +1418,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/fileupload",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "fileupload"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/fileupload",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1357,19 +1455,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/getuserlistbyorg",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "getuserlistbyorg"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/getuserlistbyorg",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1393,19 +1492,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/editcontact",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "editcontact"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/editcontact",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1429,19 +1529,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/forwarddoc",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "forwarddoc"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/forwarddoc",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1465,19 +1566,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/saveastemplate",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "saveastemplate"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/saveastemplate",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1501,19 +1603,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/updatetenant",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "updatetenant"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/updatetenant",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1537,19 +1640,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/recreatedoc",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "recreatedoc"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/recreatedoc",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1573,19 +1677,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/loginuser",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "loginuser"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/loginuser",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1609,19 +1714,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/adduser",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "adduser"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/adduser",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1645,19 +1751,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/filterdocs",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "filterdocs"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/filterdocs",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1681,19 +1788,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/senddeleterequest",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "senddeleterequest"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/senddeleterequest",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1717,19 +1825,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/resetpassword",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "resetpassword"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/resetpassword",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1753,19 +1862,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/savesignature",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "savesignature"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/savesignature",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1789,19 +1899,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/managesign",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "managesign"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/managesign",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1825,19 +1936,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/getdefaultsignature",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "getdefaultsignature"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/getdefaultsignature",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1861,19 +1973,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/updateemailtemplates",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "updateemailtemplates"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/updateemailtemplates",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1897,19 +2010,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/triggerevent",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "triggerevent"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/triggerevent",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1933,19 +2047,20 @@
               {
                 "key": "X-Parse-Master-Key",
                 "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
               }
             ],
-            "url": {
-              "raw": "{{parseBaseUrl}}/functions/setwidgetpreferences",
-              "host": [
-                "{{parseBaseUrl}}"
-              ],
-              "path": [
-                "functions",
-                "setwidgetpreferences"
-              ]
-            },
-            "description": "Call Parse Cloud Function with Master Key. NOTE: parseBaseUrl must include Parse mount path (e.g. https://app.opensignlabs.com/api/app or http://localhost:8080/app).",
+            "url": "{{parseBaseUrl}}/functions/setwidgetpreferences",
+            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1959,7 +2074,7 @@
   "variable": [
     {
       "key": "parseBaseUrl",
-      "value": "https://app.opensignlabs.com/api/app"
+      "value": "https://your-host/api/app"
     },
     {
       "key": "appId",
@@ -1968,6 +2083,18 @@
     {
       "key": "masterKey",
       "value": "YOUR_MASTER_KEY"
+    },
+    {
+      "key": "sessionToken",
+      "value": ""
+    },
+    {
+      "key": "userEmail",
+      "value": "user@example.com"
+    },
+    {
+      "key": "userPassword",
+      "value": "your_password"
     }
   ]
 }
