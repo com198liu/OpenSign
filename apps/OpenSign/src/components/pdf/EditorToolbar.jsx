@@ -1,3 +1,4 @@
+import React from "react";
 import { Quill } from "react-quill-new";
 // Use a third-party plugin so editors can toggle raw HTML view.
 import htmlEditButton from "quill-html-edit-button";

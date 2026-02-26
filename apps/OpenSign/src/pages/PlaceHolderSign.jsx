@@ -65,13 +65,11 @@ import * as utils from "../utils";
 import { resetWidgetState, setPrefillImg } from "../redux/reducers/widgetSlice";
 import EditDocument from "../components/pdf/EditTemplate";
 import CustomizeMail from "../components/pdf/CustomizeMail";
-import { useWindowSize } from "../hook/useWindowSize";
 
 function PlaceHolderSign() {
   const { t } = useTranslation();
   const copyUrlRef = useRef(null);
   const dispatch = useDispatch();
-  const windowSize = useWindowSize();
   const prefillImg = useSelector((state) => state.widget.prefillImg);
   const isShowModal = useSelector((state) => state.widget.isShowModal);
   const editorRef = useRef();
@@ -132,7 +130,7 @@ function PlaceHolderSign() {
   const [isCheckbox, setIsCheckbox] = useState(false);
   const [isNameModal, setIsNameModal] = useState(false);
   const [mailStatus, setMailStatus] = useState("");
-  const [isCurrUser, setIsCurrUser] = useState("");
+  const [isCurrUser, setIsCurrUser] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const isSidebar = useSelector((state) => state.sidebar.isOpen);
   const [showRotateAlert, setShowRotateAlert] = useState({
@@ -226,10 +224,10 @@ function PlaceHolderSign() {
       }
     };
     // Use setTimeout to wait for the transition to complete
-    const timer = setTimeout(updateSize, 150); // match the transition duration
+    const timer = setTimeout(updateSize, 100); // match the transition duration
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [divRef.current, isSidebar, windowSize?.width]);
+  }, [divRef.current, isSidebar]);
   //function for get document details
   const getDocumentDetails = async () => {
     const tenantSignTypes = await fetchTenantDetails();
@@ -1057,6 +1055,16 @@ function PlaceHolderSign() {
         : 15;
       const currentUser = signersdata.find((x) => x.Email === currentId);
       setCurrentId(currentUser?.objectId);
+      if (
+        pdfDetails?.[0]?.SendinOrder &&
+        pdfDetails?.[0]?.SendinOrder === true
+      ) {
+        const currentUserMail = Parse.User.current()?.getEmail();
+        const isCurrentUser = signerMail?.[0]?.Email === currentUserMail;
+        setIsCurrUser(isCurrentUser);
+      } else {
+        setIsCurrUser(currentUser?.objectId ? true : false);
+      }
       // Compute expiry date with extra days
       let updateExpiryDate = new Date();
       updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
@@ -1093,16 +1101,12 @@ function PlaceHolderSign() {
         const ownerId = pdfDetails[0].ExtUserPtr?.UserId?.objectId;
         const firstSigner = signersdata[0];
         const isOwner = firstSigner?.UserId?.objectId === ownerId;
+        const currentUserMail = Parse.User.current()?.getEmail();
+        const isCurrentUser = signerMail?.[0]?.Email === currentUserMail;
         if (pdfDetails[0]?.SendinOrder && isOwner) {
           setIsSend(true);
-          setIsCurrUser(currentUser?.objectId);
+          setIsCurrUser(isCurrentUser);
         } else {
-          const currentSigner = signersdata?.find(
-            (x) => x?.UserId?.objectId === ownerId
-          );
-          if (currentSigner) {
-            setIsCurrUser(currentSigner?.objectId);
-          }
           setIsMailModal(true);
         }
       } catch (e) {
@@ -1723,10 +1727,10 @@ function PlaceHolderSign() {
     }
   };
   const clickOnZoomIn = () => {
-    onClickZoomIn(zoomPercent, setScale, setZoomPercent);
+    onClickZoomIn(scale, zoomPercent, setScale, setZoomPercent);
   };
   const clickOnZoomOut = () => {
-    onClickZoomOut(zoomPercent, setZoomPercent, setScale);
+    onClickZoomOut(zoomPercent, scale, setZoomPercent, setScale);
   };
   //`handleRotationFun` function is used to roatate pdf particular page
   const handleRotationFun = async (rotateDegree) => {
@@ -1954,37 +1958,36 @@ function PlaceHolderSign() {
                         </div>
                       )}
 
-                      {mailStatus !== "quotareached" &&
-                        mailStatus !== "failed" && (
-                          <div
-                            className={
-                              mailStatus === "success"
-                                ? "flex justify-center mt-1"
-                                : "flex items-center justify-center mt-7"
-                            }
-                          >
-                            {isCurrUser && (
-                              <button
-                                onClick={() => handleRecipientSign()}
-                                type="button"
-                                className="op-btn op-btn-primary mr-1"
-                              >
-                                {t("sign-now")}
-                              </button>
-                            )}
+                      {mailStatus !== "quotareached" && (
+                        <div
+                          className={
+                            mailStatus === "success"
+                              ? "flex justify-center mt-1"
+                              : "flex items-center justify-center mt-7"
+                          }
+                        >
+                          {isCurrUser && (
                             <button
-                              onClick={() => {
-                                setIsSend(false);
-                                setSignerPos([]);
-                                navigate("/report/1MwEuxLEkF");
-                              }}
+                              onClick={() => handleRecipientSign()}
                               type="button"
-                              className="op-btn op-btn-ghost text-base-content"
+                              className="op-btn op-btn-primary mr-1"
                             >
-                              {isCurrUser ? t("no") : t("close")}
+                              {t("sign-now")}
                             </button>
-                          </div>
-                        )}
+                          )}
+                          <button
+                            onClick={() => {
+                              setIsSend(false);
+                              setSignerPos([]);
+                              navigate("/report/1MwEuxLEkF");
+                            }}
+                            type="button"
+                            className="op-btn op-btn-ghost text-base-content"
+                          >
+                            {isCurrUser ? t("no") : t("close")}
+                          </button>
+                        </div>
+                      )}
                     </div>
                     {mailStatus !== "success" &&
                       isCurrUser &&
@@ -2270,7 +2273,6 @@ function PlaceHolderSign() {
             defaultMail={defaultMail}
             isMailModal={isMailModal}
             handleShareList={handleShareList}
-            setCurrUserId={setIsCurrUser}
           />
         </div>
       )}

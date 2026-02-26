@@ -16,9 +16,7 @@ function PenColorComponent({
   convertToImg,
   fontSelect,
   typedSignature,
-  setPenColor,
-  hideLabel = false,
-  penSize
+  setPenColor
 }) {
   const { t } = useTranslation();
 
@@ -34,12 +32,9 @@ function PenColorComponent({
     return filtered.length ? [...new Set(filtered)] : ALLOWED_COLORS;
   }, [providedColors]);
 
-  const PEN_SIZE = penSize === "sm" ? "text-[14px]" : "text-[16px]";
   return (
-    <div
-      className={`flex flex-row items-center m-[5px] ${penSize === "sm" ? "gap-2" : "gap-3"}`}
-    >
-      {!hideLabel && <span className="text-base-content">{t("options")}</span>}
+    <div className="flex flex-row items-center m-[5px] gap-3">
+      <span className="text-base-content">{t("options")}</span>
       {pensList.map((color) => {
         const selected = penColor === color;
         return (
@@ -50,9 +45,10 @@ function PenColorComponent({
             aria-label={`Select ${color} pen`}
             onClick={() => {
               setPenColor?.(color);
-              convertToImg && convertToImg?.(fontSelect, typedSignature, color);
+              convertToImg &&
+                convertToImg?.(fontSelect, typedSignature, color);
             }}
-            className={`${COLOR_CLASS[color] || "text-base-content"} ${selected ? "border-current" : "border-white"} border-b-[2px] pb-0.5 cursor-pointer ${PEN_SIZE} fa-light fa-pen-nib`}
+            className={`${COLOR_CLASS[color] || "text-base-content"} ${selected ? "border-current" : "border-white"} border-b-[2px] pb-0.5 cursor-pointer text-[16px] fa-light fa-pen-nib`}
           ></i>
         );
       })}

@@ -99,8 +99,14 @@ function PlaceholderType(props) {
   ExampleCustomInput.displayName = "ExampleCustomInput";
 
   const handleRadioCheck = (data) => {
-    const defaultData = widgetValue || props.pos.options?.defaultValue;
-    return defaultData === data;
+    const defaultData = props.pos.options?.defaultValue;
+    if (widgetValue === data) {
+      return true;
+    } else if (defaultData === data) {
+      return true;
+    } else {
+      return false;
+    }
   };
   //function is used to get prefill image's signedUrl after expired
   useEffect(() => {

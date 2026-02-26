@@ -69,7 +69,6 @@ import {
 import WidgetsValueModal from "../components/pdf/WidgetsValueModal";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import CellsSettingModal from "../components/pdf/CellsSettingModal";
-import { useWindowSize } from "../hook/useWindowSize";
 import {
   applyNumberFormulasToPages,
 } from "../utils";
@@ -78,7 +77,6 @@ function SignYourSelf() {
   const { t } = useTranslation();
   const { docId } = useParams();
   const dispatch = useDispatch();
-  const windowSize = useWindowSize();
   const isShowModal = useSelector((state) => state.widget.isShowModal);
   const appName =
     "OpenSign™";
@@ -191,10 +189,10 @@ function SignYourSelf() {
     };
 
     // Use setTimeout to wait for the transition to complete
-    const timer = setTimeout(updateSize, 150); // match the transition duration
+    const timer = setTimeout(updateSize, 100); // match the transition duration
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [divRef.current, isSidebar, windowSize?.width]);
+  }, [divRef.current, isSidebar]);
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async (showComplete) => {
     try {
@@ -1166,10 +1164,10 @@ function SignYourSelf() {
     setCurrWidgetsDetails({});
   };
   const clickOnZoomIn = () => {
-    onClickZoomIn(zoomPercent, setScale, setZoomPercent);
+    onClickZoomIn(scale, zoomPercent, setScale, setZoomPercent);
   };
   const clickOnZoomOut = () => {
-    onClickZoomOut(zoomPercent, setZoomPercent, setScale);
+    onClickZoomOut(zoomPercent, scale, setZoomPercent, setScale);
   };
   //`handleRotationFun` function is used to roatate pdf particular page
   const handleRotationFun = async (rotateDegree) => {

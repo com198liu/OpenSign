@@ -111,15 +111,16 @@ function DropdownWidgetOption(props) {
         return;
       }
     }
+    const defaultData =
+      defaultCheckbox && defaultCheckbox.length > 0
+        ? defaultCheckbox
+        : defaultValue;
 
     const isDropdownOrRadio =
       props?.type === "dropdown" || props?.type === radioButtonWidget;
-    const isCheckbox = props?.type === "checkbox";
-
-    const defaultData = isCheckbox ? defaultCheckbox : defaultValue;
-
     const readOnlyWithoutValue =
       isReadOnly && !defaultValue && status !== "optional";
+    const isCheckbox = props?.type === "checkbox";
     const WidgetLayout = ["checkbox", radioButtonWidget].includes(props.type)
       ? layout
       : null;
@@ -156,15 +157,13 @@ function DropdownWidgetOption(props) {
   };
 
 
-  const handleSelectDefaultCheckbox = (e, index) => {
-    const checked = e.target.checked;
-    setDefaultCheckbox((prev) =>
-      checked
-        ? prev.includes(index)
-          ? prev
-          : [...prev, index]
-        : prev.filter((i) => i !== index)
-    );
+  const handleDefaultCheck = (index) => {
+    const getDefaultCheck = defaultCheckbox.includes(index);
+    if (getDefaultCheck) {
+      return true;
+    } else {
+      return false;
+    }
   };
   return (
     <ModalUi isOpen={props.showDropdown} title={props.title} showClose={false}>
@@ -202,8 +201,21 @@ function DropdownWidgetOption(props) {
                   {props.type === "checkbox" && props.isShowAdvanceFeature && (
                     <input
                       type="checkbox"
-                      checked={defaultCheckbox?.includes(index)}
-                      onChange={(e) => handleSelectDefaultCheckbox(e, index)}
+                      checked={handleDefaultCheck(index)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          const getDefaultCheck =
+                            defaultCheckbox?.includes(index);
+                          if (!getDefaultCheck) {
+                            setDefaultCheckbox((prev) => [...prev, index]);
+                          }
+                        } else {
+                          const removeOption = defaultCheckbox.filter(
+                            (data) => data !== index
+                          );
+                          setDefaultCheckbox(removeOption);
+                        }
+                      }}
                       className="op-checkbox focus:outline-none hover:border-base-content mr-[5px]"
                     />
                   )}

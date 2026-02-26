@@ -1,9 +1,6 @@
 import { useTranslation } from "react-i18next";
 
 const DateFormat = ({ selectDate, dateFormatList, handleChangeFormat }) => {
-  const selectedFormatIndex = dateFormatList?.findIndex(
-    (item) => item.format === selectDate?.format
-  );
   const { t } = useTranslation();
 
   return (
@@ -11,7 +8,7 @@ const DateFormat = ({ selectDate, dateFormatList, handleChangeFormat }) => {
       <span className="capitalize">{t("format")}: </span>
       <select
         className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs md:ml-2"
-        value={selectedFormatIndex >= 0 ? selectedFormatIndex : ""}
+        defaultValue={""}
         onChange={(e) => handleChangeFormat(e)}
       >
         <option value="" disabled>
@@ -25,9 +22,7 @@ const DateFormat = ({ selectDate, dateFormatList, handleChangeFormat }) => {
           );
         })}
       </select>
-      <span className="text-xs text-gray-400 ml-1 uppercase">
-        {selectDate.format}
-      </span>
+      <span className="text-xs text-gray-400 ml-1 uppercase">{selectDate.format}</span>
     </div>
   );
 };

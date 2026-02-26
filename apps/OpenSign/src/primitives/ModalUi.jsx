@@ -1,5 +1,5 @@
+import React from "react";
 import "../styles/signature.css";
-import Loader from "./Loader";
 
 const ModalUi = ({
   children,
@@ -10,14 +10,11 @@ const ModalUi = ({
   showClose = true,
   reduceWidth,
   position,
-  crossColor,
-  showScrollBar = false,
-  isLoader = false
+  crossColor
 }) => {
   const width = reduceWidth;
   const isBottom = position === "bottom" ? "items-end pb-2 !bg-black/10" : "";
   const crossBtnColor = crossColor ?? "text-base-content";
-  const hideScrollBar = !showScrollBar ? "hide-scrollbar" : "";
   return (
     <>
       {isOpen && (
@@ -29,13 +26,10 @@ const ModalUi = ({
             content: { zIndex: 1001, overflow: "visible" } // Ensure modal doesn’t clip content
           }}
         >
-          {isLoader && (
-            <div className="absolute z-[999] h-full w-full flex justify-center items-center bg-black bg-opacity-30">
-              <Loader />
-            </div>
-          )}
           <div
-            className={`${width || "md:min-w-[500px]"} op-modal-box p-0 max-h-90 overflow-y-auto ${hideScrollBar} text-sm`}
+            className={`${
+              width || "md:min-w-[500px]"
+            } op-modal-box p-0 max-h-90 overflow-y-auto hide-scrollbar text-sm`}
           >
             {showHeader && (
               <>

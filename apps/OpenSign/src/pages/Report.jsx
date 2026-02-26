@@ -34,7 +34,6 @@ const Report = () => {
   const [isColumnModal, setIsColumnModal] = useState(false);
   const [searchLoader, setSearchLoader] = useState(false);
   const debounceTimer = useRef(null);
-  const searchAbortRef = useRef(null); // holds AbortController
   // Number of documents to display per page (should always be half of docLimit for proper pagination)
   const docPerPage = 10;
   // Number of documents to fetch per API call
@@ -64,10 +63,6 @@ const Report = () => {
       setIsNextRecord(false);
       // Here it'll abort the fetch
       abortController.abort();
-      if (searchAbortRef.current) {
-        searchAbortRef.current.abort();
-        searchAbortRef.current = null;
-      }
     };
     // eslint-disable-next-line
   }, [id]);
@@ -86,16 +81,7 @@ const Report = () => {
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
-    // 2) abort any in-flight request triggered by older debounce
-    if (searchAbortRef.current) {
-      searchAbortRef.current.abort();
-      searchAbortRef.current = null;
-    }
     debounceTimer.current = setTimeout(async () => {
-      // create controller for THIS request
-      const controller = new AbortController();
-      searchAbortRef.current = controller;
-
       setSearchLoader(true);
       try {
         const headers = {
@@ -107,11 +93,8 @@ const Report = () => {
         const res = await axios.post(
           url,
           { reportId: id, searchTerm: term, skip: 0, limit: docPerPage },
-          { headers: headers, signal: controller.signal } // ✅ axios abort
+          { headers }
         );
-        // if you want to be extra safe (ignore late responses)
-        if (controller.signal.aborted) return;
-
         const data = res.data?.result || [];
         if (!data.error) {
           setList(data);
@@ -121,12 +104,7 @@ const Report = () => {
           setSearchLoader(false);
         }
       } catch (err) {
-        // ✅ ignore abort errors
-        const isAbort =
-          err?.name === "CanceledError" ||
-          err?.code === "ERR_CANCELED" ||
-          err?.message?.toLowerCase?.().includes("canceled");
-        if (!isAbort) console.error("Search error:", err);
+        console.error("Search error:", err);
         setSearchLoader(false);
       }
     }, 300);
@@ -244,7 +222,7 @@ const Report = () => {
         } catch (err) {
           const isCancel = axios.isCancel(err);
           if (!isCancel) {
-            console.error("getreport error", err);
+            console.log("err ", err);
             setIsLoader(false);
           }
         }

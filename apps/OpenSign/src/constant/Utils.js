@@ -1050,7 +1050,9 @@ export const addZIndex = (signerPos, key, setZIndex) => {
           zIndex: item.zIndex ? item.zIndex + 1 : 1
         };
       } else {
-        return { ...item };
+        return {
+          ...item
+        };
       }
     }
   });
@@ -1090,7 +1092,11 @@ export const onChangeInput = (
       if (getPageNumer.length > 0) {
         const getXYdata = getPageNumer[0].pos;
         const addSignPos = getXYdata.map((position) => {
-          if (position.key === currentPosition.key) {
+          if (
+            (position?.options?.name === currentPosition?.options?.name &&
+              filterSignerPos[0].Role === "prefill") ||
+            position.key === currentPosition.key
+          ) {
             if (dateFormat) {
               return {
                 ...position,
@@ -1102,17 +1108,13 @@ export const onChangeInput = (
                     ? fontColor
                     : position.options?.fontColor,
                   isReadOnly:
-                    dateDetails && dateDetails?.isReadOnly !== "undefined"
+                    dateDetails?.isReadOnly !== "undefined"
                       ? dateDetails?.isReadOnly
                       : position.options?.isReadOnly,
                   status:
-                    dateDetails && dateDetails?.status !== "undefined"
+                    dateDetails?.status !== "undefined"
                       ? dateDetails?.status
                       : position.options?.status,
-                  name:
-                    dateDetails && dateDetails?.name !== "undefined"
-                      ? dateDetails?.name
-                      : position.options?.name,
                   validation: {
                     type: "date-format",
                     format: dateFormat // This indicates the required date format explicitly.
@@ -1458,6 +1460,7 @@ export function onSaveSign(
   typedSignature,
   isAutoSign,
   widgetsType,
+  isApplyAll,
   typeFont,
   fontColor
 ) {
@@ -1510,7 +1513,7 @@ export function onSaveSign(
     return obj;
   });
   //condition  when draw/upload signature/initials then apply it all related to widgets (draw, typed signature or default signature)
-  if (isAutoSign && widgetsType !== drawWidget) {
+  if ((isApplyAll || isAutoSign) && widgetsType !== drawWidget) {
     const updatedArray = updateXYposition.map((page) => ({
       ...page,
       pos: page.pos.map((item) => {
@@ -1540,26 +1543,6 @@ export function onSaveSign(
   }
 }
 
-export function clearResponse(widgetKey, placeholder = [], index) {
-  if (!Array.isArray(placeholder) || !placeholder[index]?.pos) {
-    return placeholder;
-  }
-  const getXYdata = placeholder[index]?.pos;
-  const updateXYData = getXYdata.map((widget) => {
-    if (widget?.key !== widgetKey) return widget;
-    return {
-      ...widget,
-      options: { ...widget.options, response: "" },
-      SignUrl: ""
-    };
-  });
-
-  const updatePlaceholder = placeholder.map((p, ind) => {
-    if (ind !== index) return p;
-    return { ...p, pos: updateXYData };
-  });
-  return updatePlaceholder;
-}
 /**
  * Scales and centers a base64‐encoded image into a fixed‐size widget
  * and returns a new base64 PNG.
@@ -1570,7 +1553,12 @@ export function clearResponse(widgetKey, placeholder = [], index) {
  */
 export async function convertBase64ToImg(base64Image, widgetDims) {
   const { Width: maxWidth, Height: maxHeight } = widgetDims;
-  // Load the image off-DOM
+
+  // Detect input format from data URL
+  const match = base64Image.match(/^data:(image\/(png|jpeg|jpg|webp));base64,/);
+  const inputMime = match ? match[1] : "image/png"; // fallback to PNG if unknown
+
+  // 1. Load the image off-DOM
   const img = new Image();
   img.src = base64Image;
   await new Promise((resolve, reject) => {
@@ -1676,6 +1664,7 @@ export function onSaveImage(
   image,
   isAutoSign,
   widgetsType,
+  isApplyAll,
   imgUrl,
   defaultStampImg,
   defaultStampType
@@ -1707,7 +1696,7 @@ export function onSaveImage(
     return obj;
   });
   // condition when user upload(stamp) then apply it all related to widgets
-  if (isAutoSign) {
+  if (isApplyAll || isAutoSign) {
     const updatedArray = updateXYposition.map((page) => ({
       ...page,
       pos: page.pos.map(
@@ -2366,18 +2355,11 @@ export const embedWidgetsToDoc = async (
               }
             });
           }
-          const isOptionExist = position?.options?.values?.some(
-            (x) =>
-              x === position?.options?.response ||
-              position?.options?.defaultValue
-          );
-          if (isOptionExist) {
-            // 5. Pre‐select a value if provided
-            if (position?.options?.response) {
-              radioGroup.select(position.options?.response);
-            } else if (position?.options?.defaultValue) {
-              radioGroup.select(position?.options?.defaultValue);
-            }
+          // 5. Pre‐select a value if provided
+          if (position?.options?.response) {
+            radioGroup.select(position.options?.response);
+          } else if (position?.options?.defaultValue) {
+            radioGroup.select(position?.options?.defaultValue);
           }
           // 6. Set to read‐only (if required)
           radioGroup.enableReadOnly();
@@ -2425,7 +2407,11 @@ export const placeholderWidth = (pos) => {
   const posWidth = pos.Width || defaultWidth;
   //condition to handle old data saved from mobile view to get widthh
   if (pos.isMobile && pos.scale) {
-    return pos.IsResize ? posWidth : posWidth * pos.scale;
+    if (pos.IsResize) {
+      return posWidth;
+    } else {
+      return posWidth * pos.scale;
+    }
   } else {
     return posWidth;
   }
@@ -2439,7 +2425,11 @@ export const placeholderHeight = (pos) => {
 
   //condition to handle old data saved from mobile view to get height
   if (pos.isMobile && pos.scale) {
-    return pos.IsResize ? posUpdateHeight : posUpdateHeight * pos.scale;
+    if (pos.IsResize) {
+      return posUpdateHeight;
+    } else {
+      return posUpdateHeight * pos.scale;
+    }
   } else {
     return posUpdateHeight;
   }
@@ -2447,20 +2437,30 @@ export const placeholderHeight = (pos) => {
 
 //function for getting contracts_contactbook details
 export const contactBook = async (objectId) => {
-  try {
-    const url = `${localStorage.getItem("baseUrl")}classes/contracts_Contactbook?where={"objectId":"${objectId}"}`;
-    const headers = {
-      "Content-Type": "application/json",
-      "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-      "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-    };
-    const axiosRes = await axios.get(url, { headers });
-    const result = axiosRes?.data?.results;
-    return result;
-  } catch (error) {
-    console.error("contracts_Contactbook error", err);
-    return "Error: Something went wrong!";
-  }
+  const result = await axios
+    .get(
+      `${localStorage.getItem(
+        "baseUrl"
+      )}classes/contracts_Contactbook?where={"objectId":"${objectId}"}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+        }
+      }
+    )
+    .then((Listdata) => {
+      const json = Listdata.data;
+      const res = json.results;
+      return res;
+    })
+
+    .catch((err) => {
+      console.log("Err in contracts_Contactbook class ", err);
+      return "Error: Something went wrong!";
+    });
+  return result;
 };
 
 //function for getting document details from contract_Documents class
@@ -2744,9 +2744,6 @@ export const fetchUrl = async (url, fileName) => {
 
 export const getSignedUrl = async (pdfUrl, docId, templateId) => {
   //use only axios here due to public template sign
-  const token = {
-    "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-  };
   const axiosRes = await axios.post(
     `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
     {
@@ -2758,7 +2755,7 @@ export const getSignedUrl = async (pdfUrl, docId, templateId) => {
       headers: {
         "content-type": "Application/json",
         "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-        ...token
+        "X-Parse-Session-Token": localStorage.getItem("accesstoken")
       }
     }
   );
@@ -2880,22 +2877,6 @@ export const handleToPrint = async (event, setIsDownloading, pdfDetails) => {
     alert(i18n.t("something-went-wrong-mssg"));
   }
 };
-const downloadCertificate = async (certificate, isZip, asBlob) => {
-  try {
-    const appName = "OpenSign™";
-    const fetchCertificate = await fetch(certificate);
-    const certificateUrl = certificate;
-    if (isZip) {
-      return certificateUrl;
-    } else {
-      // Convert the response into a Blob
-      const blob = asBlob ? await fetchCertificate.blob() : certificateUrl;
-      saveAs(blob, `Certificate_signed_by_${appName}.pdf`);
-    }
-  } catch (err) {
-    console.error("download certificate err", err);
-  }
-};
 
 //handle download signed pdf
 export const handleDownloadCertificate = async (
@@ -2903,51 +2884,82 @@ export const handleDownloadCertificate = async (
   setIsDownloading,
   isZip
 ) => {
-  const baseUrl = `${localStorage.getItem("baseUrl")}functions`;
-  const parseAppId = localStorage.getItem("parseAppId");
-  const sessionToken = localStorage.getItem("accesstoken");
-  const docId = pdfDetails?.[0]?.objectId;
-  const initialCertificateUrl = pdfDetails?.[0]?.CertificateUrl;
-  const headers = {
-    "Content-Type": "application/json",
-    "X-Parse-Application-Id": parseAppId
-  };
-
-  if (initialCertificateUrl) {
-    await downloadCertificate(initialCertificateUrl, isZip);
+  const appName = "OpenSign™";
+  if (pdfDetails?.length > 0 && pdfDetails[0]?.CertificateUrl) {
+    try {
+      await fetch(pdfDetails[0] && pdfDetails[0]?.CertificateUrl);
+      const certificateUrl = pdfDetails[0] && pdfDetails[0]?.CertificateUrl;
+      if (isZip) {
+        return certificateUrl;
+      } else {
+        saveAs(certificateUrl, `Certificate_signed_by_${appName}.pdf`);
+      }
+    } catch (err) {
+      console.log("err in download in certificate", err);
+    }
   } else {
     setIsDownloading("certificate");
     try {
-      const data = { docId: docId };
-      const docDetails = await axios.post(`${baseUrl}/getDocument`, data, {
-        headers: { ...headers, sessionToken }
-      });
-      const cert = docDetails?.data?.result?.CertificateUrl;
-      if (cert) {
-        await downloadCertificate(cert, isZip);
-        setIsDownloading("");
-      } else {
-        const generateRes = await axios.post(
-          `${baseUrl}/generatecertificate`,
-          data,
-          { headers }
-        );
-        const certificate = generateRes?.data?.result?.CertificateUrl;
-        if (certificate) {
-          try {
-            await downloadCertificate(certificate, isZip, true);
+      const data = { docId: pdfDetails[0]?.objectId };
+      const docDetails = await axios.post(
+        `${localStorage.getItem("baseUrl")}functions/getDocument`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            sessionToken: localStorage.getItem("accesstoken")
+          }
+        }
+      );
+      if (docDetails.data && docDetails.data.result) {
+        const doc = docDetails.data.result;
+        if (doc?.CertificateUrl) {
+          await fetch(doc?.CertificateUrl);
+          const certificateUrl = doc?.CertificateUrl;
+          if (isZip) {
             setIsDownloading("");
-          } catch (err) {
-            console.error("download certificate err", err);
-            setIsDownloading("certificate_err");
+            return certificateUrl;
+          } else {
+            saveAs(certificateUrl, `Certificate_signed_by_${appName}.pdf`);
+            setIsDownloading("");
           }
         } else {
-          setIsDownloading("certificate_err");
+          const generateRes = await axios.post(
+            `${localStorage.getItem("baseUrl")}functions/generatecertificate`,
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+              }
+            }
+          );
+          if (generateRes?.data?.result?.CertificateUrl) {
+            try {
+              const certificateUrl = generateRes.data.result.CertificateUrl;
+              const fetchCertificate = await fetch(certificateUrl);
+              if (isZip) {
+                setIsDownloading("");
+                return certificateUrl;
+              } else {
+                // Convert the response into a Blob
+                const certificateBlob = await fetchCertificate.blob();
+                setIsDownloading("");
+                saveAs(certificateBlob, `Certificate_signed_by_${appName}.pdf`);
+              }
+            } catch (err) {
+              console.log("err in download in certificate", err);
+              setIsDownloading("certificate_err");
+            }
+          } else {
+            setIsDownloading("certificate_err");
+          }
         }
       }
     } catch (err) {
       setIsDownloading("certificate_err");
-      console.error("download certificate err", err);
+      console.log("err in download in certificate", err);
       alert(i18n.t("something-went-wrong-mssg"));
     }
   }
@@ -3199,12 +3211,17 @@ export const convertBase64ToFile = async (pdfName, pdfBase64, imgType) => {
     console.log("error in convertbase64tofile", e);
   }
 };
-export const onClickZoomIn = (zoomPercent, setScale, setZoomPercent) => {
+export const onClickZoomIn = (scale, zoomPercent, setScale, setZoomPercent) => {
   const newPercent = zoomPercent + 10;
   setZoomPercent(newPercent);
   setScale(1 + newPercent / 100);
 };
-export const onClickZoomOut = (zoomPercent, setZoomPercent, setScale) => {
+export const onClickZoomOut = (
+  zoomPercent,
+  scale,
+  setZoomPercent,
+  setScale
+) => {
   if (zoomPercent > 0) {
     const newPercent = Math.max(0, zoomPercent - 10);
     setZoomPercent(newPercent);
@@ -3282,7 +3299,11 @@ export const handleRotateWarning = (signerPos, pageNumber) => {
   const placeholderExist = signerPos?.some((placeholderObj) =>
     placeholderObj?.placeHolder?.some((data) => data?.pageNumber === pageNumber)
   );
-  return placeholderExist ? true : false;
+  if (placeholderExist) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
 // `generateTitleFromFilename` to generate Title of document from file name
@@ -3563,18 +3584,7 @@ export const updateDateWidgetsRes = (
           ...ph,
           // Sort positions within each page
           pos: [...ph.pos]
-            .sort((a, b) => {
-              // Sort widgets by Y position (top to bottom) and X position (left to right)
-              // Treat widgets within 5px Y difference as belonging to the same row
-              const Y_TOLERANCE = 5;
-              const yDiff = a.yPosition - b.yPosition;
-
-              if (Math.abs(yDiff) <= Y_TOLERANCE) {
-                return a.xPosition - b.xPosition; // Same row → sort by X
-              }
-
-              return yDiff; // Different rows → sort by Y
-            })
+            .sort((a, b) => a.yPosition - b.yPosition)
             .map((widget) => {
               // Update widget values if needed
               if (
@@ -3596,6 +3606,7 @@ export const updateDateWidgetsRes = (
               return widget;
             })
         }));
+
       return { ...item, placeHolder: sortedPlaceHolder };
     }
 
@@ -3775,7 +3786,11 @@ export const handleCheckResponse = (checkUser, setminRequiredCount) => {
       break;
     }
   }
-  return { tourPageNumber, widgetKey, showAlert };
+  return {
+    tourPageNumber,
+    widgetKey,
+    showAlert
+  };
 };
 
 /**

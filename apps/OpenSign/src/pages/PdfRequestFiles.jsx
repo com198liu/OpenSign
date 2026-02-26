@@ -71,13 +71,11 @@ import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
 import TextFontSetting from "../components/pdf/TextFontSetting";
 import WidgetsValueModal from "../components/pdf/WidgetsValueModal";
 import * as utils from "../utils";
-import { useWindowSize } from "../hook/useWindowSize";
 
 function PdfRequestFiles(
 ) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const windowSize = useWindowSize();
   const prefillImg = useSelector((state) => state.widget.prefillImg);
   const isShowModal = useSelector((state) => state.widget.isShowModal);
   const defaultSignImg = useSelector((state) => state.widget.defaultSignImg);
@@ -210,10 +208,10 @@ function PdfRequestFiles(
     };
 
     // Use setTimeout to wait for the transition to complete
-    const timer = setTimeout(updateSize, 150); // match the transition duration
+    const timer = setTimeout(updateSize, 100); // match the transition duration
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [divRef.current, isSidebar, windowSize?.width]);
+  }, [divRef.current, isSidebar]);
   const redirectUrl = pdfDetails?.[0]?.RedirectUrl || "";
   useEffect(() => {
     if (isredirectCanceled) return; // Stop the redirect timer if canceled
@@ -1396,10 +1394,10 @@ function PdfRequestFiles(
   };
 
   const clickOnZoomIn = () => {
-    onClickZoomIn(zoomPercent, setScale, setZoomPercent);
+    onClickZoomIn(scale, zoomPercent, setScale, setZoomPercent);
   };
   const clickOnZoomOut = () => {
-    onClickZoomOut(zoomPercent, setZoomPercent, setScale);
+    onClickZoomOut(zoomPercent, scale, setZoomPercent, setScale);
   };
   const handleDownloadBtn = async () => {
     const url = pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL;

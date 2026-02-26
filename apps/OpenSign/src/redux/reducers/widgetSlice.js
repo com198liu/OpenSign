@@ -15,9 +15,7 @@ const initialState = {
   scrollTriggerId: "",
   prefillImg: [],
   prefillImgLoad: {},
-  typedSignFont: "Fasthand",
-  signatureResponse: [],
-  isBulkLoader: false
+  typedSignFont: "Fasthand"
 };
 
 const widgetSlice = createSlice({
@@ -69,28 +67,6 @@ const widgetSlice = createSlice({
     setMyStamp: (state, action) => {
       state.myStamp = action.payload;
     },
-    setSignatureRes: (state, action) => {
-      const payload = action.payload;
-      const { type } = payload;
-      const index = state.signatureResponse.findIndex(
-        (item) => item.type === type
-      );
-      if (index !== -1) {
-        // 🔁 Update existing object by type
-        state.signatureResponse[index] = {
-          ...state.signatureResponse[index],
-          ...payload
-        };
-        return;
-      }
-      // ➕ Add only if less than 2 objects
-      if (state.signatureResponse.length < 3) {
-        state.signatureResponse.push(payload);
-      }
-    },
-    setBulkLoader: (state, action) => {
-      state.isBulkLoader = action.payload;
-    },
     resetWidgetState: () => initialState
   }
 });
@@ -107,9 +83,7 @@ export const {
   setPrefillImg,
   setPrefillImgLoad,
   setTypedSignFont,
-  setMyStamp,
-  setSignatureRes,
-  setBulkLoader
+  setMyStamp
 } = widgetSlice.actions;
 
 export default widgetSlice.reducer;
