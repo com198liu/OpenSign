@@ -1,8 +1,8 @@
 {
   "info": {
     "name": "OpenSign Master Key API (Parse Cloud Functions)",
-    "_postman_id": "9c2f02cf-e467-4275-baf1-821250357b7a",
-    "description": "IMPORTANT ORDER: (1) run health-check, (2) if needed run loginuser and set sessionToken, (3) call business functions. parseBaseUrl MUST include Parse mount path, e.g. https://your-host/api/app or http://localhost:8080/app",
+    "_postman_id": "4d35a104-a57d-4868-a1d1-9d00a4b28f6f",
+    "description": "Includes parameter templates inferred from source. Order: health-check -> loginuser (if needed) -> target function.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -24,7 +24,7 @@
               }
             ],
             "url": "{{parseBaseUrl}}/health",
-            "description": "Should return JSON from Parse. If you still get HTML, parseBaseUrl is wrong or reverse proxy does not expose Parse mount."
+            "description": "Must return JSON. If HTML returns, parseBaseUrl points to frontend route."
           },
           "response": []
         },
@@ -57,7 +57,7 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/loginuser",
-            "description": "Login to get user context; copy `result.sessionToken` to collection variable `sessionToken`. Some business APIs require user session in header `sessiontoken`.",
+            "description": "Required params: email, password. Body template includes params inferred from source code.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}"
@@ -68,7 +68,7 @@
       ]
     },
     {
-      "name": "01-Cloud-Functions",
+      "name": "01-Cloud-Functions-with-Param-Templates",
       "item": [
         {
           "name": "signPdf",
@@ -99,10 +99,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/signPdf",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/pdf/PDF.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\",\n  \"isCustomCompletionMail\": \"REPLACE_isCustomCompletionMail\",\n  \"mailProvider\": \"REPLACE_mailProvider\",\n  \"pdfFile\": \"REPLACE_pdfFile\",\n  \"signature\": \"REPLACE_signature\",\n  \"userId\": \"REPLACE_USERID\"\n}"
             }
           },
           "response": []
@@ -136,10 +136,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/sendmailv3",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/sendMailv3.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"bcc\": \"REPLACE_bcc\",\n  \"certificatePath\": \"REPLACE_certificatePath\",\n  \"extUserId\": \"REPLACE_EXTUSERID\",\n  \"filename\": \"sample.pdf\",\n  \"from\": \"REPLACE_from\",\n  \"html\": \"REPLACE_html\",\n  \"pdfName\": \"sample.pdf\",\n  \"recipient\": \"REPLACE_recipient\",\n  \"replyto\": \"REPLACE_replyto\",\n  \"subject\": \"REPLACE_subject\",\n  \"text\": \"REPLACE_text\",\n  \"url\": \"https://example.com/file.pdf\"\n}"
             }
           },
           "response": []
@@ -173,10 +173,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/usersignup",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/usersignup.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"userDetails\": \"REPLACE_userDetails\"\n}"
             }
           },
           "response": []
@@ -210,10 +210,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/SendOTPMailV1",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/SendMailOTPv1.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"TenantId\": \"REPLACE_TENANTID\",\n  \"docId\": \"REPLACE_DOCID\",\n  \"email\": \"{{userEmail}}\"\n}"
             }
           },
           "response": []
@@ -247,10 +247,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/AuthLoginAsMail",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/AuthLoginAsMail.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"otp\": \"REPLACE_otp\"\n}"
             }
           },
           "response": []
@@ -284,10 +284,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/getUserId",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: username. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getUserId.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"username\": \"REPLACE_username\"\n}"
             }
           },
           "response": []
@@ -321,10 +321,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/getUserDetails",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: email, userId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getUserDetails.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"userId\": \"REPLACE_USERID\"\n}"
             }
           },
           "response": []
@@ -358,10 +358,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/getDocument",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: docId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getDocument.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\",\n  \"include\": \"REPLACE_include\"\n}"
             }
           },
           "response": []
@@ -395,10 +395,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/getDrive",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: docId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getDrive.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\",\n  \"limit\": 10,\n  \"skip\": 0\n}"
             }
           },
           "response": []
@@ -432,10 +432,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/getReport",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getReport.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"limit\": 10,\n  \"reportId\": \"REPLACE_REPORTID\",\n  \"searchTerm\": \"REPLACE_searchTerm\",\n  \"skip\": 0\n}"
             }
           },
           "response": []
@@ -469,10 +469,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/getTemplate",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/GetTemplate.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"templateId\": \"REPLACE_TEMPLATEID\"\n}"
             }
           },
           "response": []
@@ -506,10 +506,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/verifyemail",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/VerifyEmail.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"otp\": \"REPLACE_otp\"\n}"
             }
           },
           "response": []
@@ -543,10 +543,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/getsignedurl",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getSignedUrl.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\",\n  \"templateId\": \"REPLACE_TEMPLATEID\",\n  \"url\": \"https://example.com/file.pdf\"\n}"
             }
           },
           "response": []
@@ -580,10 +580,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/batchdocuments",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/createBatchDocs.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"Documents\": [\n    {\n      \"Name\": \"Doc1\"\n    }\n  ]\n}"
             }
           },
           "response": []
@@ -617,10 +617,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/linkcontacttodoc",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/linkContactToDoc.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"company\": \"REPLACE_company\",\n  \"docId\": \"REPLACE_DOCID\",\n  \"email\": \"{{userEmail}}\",\n  \"jobTitle\": \"REPLACE_jobTitle\",\n  \"name\": \"REPLACE_name\",\n  \"phone\": \"REPLACE_phone\"\n}"
             }
           },
           "response": []
@@ -654,10 +654,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/isextenduser",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/isextenduser.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
             }
           },
           "response": []
@@ -691,10 +691,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/getlogobydomain",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/GetLogoByDomain.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"domain\": \"REPLACE_domain\"\n}"
             }
           },
           "response": []
@@ -728,10 +728,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/addadmin",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/AddAdmin.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"userDetails\": \"REPLACE_userDetails\"\n}"
             }
           },
           "response": []
@@ -765,7 +765,7 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/checkadminexist",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "No explicit *.params usage found in source. Source: apps/OpenSignServer/cloud/parsefunction/CheckAdminExist.js",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -802,10 +802,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/updateuserasadmin",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/UpdateExistUserAsAdmin.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"masterkey\": \"REPLACE_masterkey\"\n}"
             }
           },
           "response": []
@@ -839,10 +839,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/newsletter",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/Newsletter.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"domain\": \"REPLACE_domain\",\n  \"email\": \"{{userEmail}}\",\n  \"name\": \"REPLACE_name\"\n}"
             }
           },
           "response": []
@@ -876,10 +876,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/getteams",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: active. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getTeams.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"active\": true\n}"
             }
           },
           "response": []
@@ -913,10 +913,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/getcontact",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getContact.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"contactId\": \"REPLACE_CONTACTID\"\n}"
             }
           },
           "response": []
@@ -950,10 +950,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/updatecontacttour",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/updateContactTour.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"contactId\": \"REPLACE_CONTACTID\"\n}"
             }
           },
           "response": []
@@ -987,10 +987,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/declinedoc",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: docId, userId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/declinedocument.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\",\n  \"reason\": \"REPLACE_reason\",\n  \"userId\": \"REPLACE_USERID\"\n}"
             }
           },
           "response": []
@@ -1024,10 +1024,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/gettenant",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: contactId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getTenant.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"contactId\": \"REPLACE_CONTACTID\",\n  \"userId\": \"REPLACE_USERID\"\n}"
             }
           },
           "response": []
@@ -1061,10 +1061,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/getsigners",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getSigners.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"search\": \"REPLACE_search\"\n}"
             }
           },
           "response": []
@@ -1098,10 +1098,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/savefile",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: fileName, fileBase64. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/saveFile.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"fileBase64\": \"data:application/pdf;base64,REPLACE_BASE64\",\n  \"fileName\": \"sample.pdf\",\n  \"id\": \"REPLACE_ID\"\n}"
             }
           },
           "response": []
@@ -1135,10 +1135,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/savecontact",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: name, phone, tenantId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/savecontact.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"company\": \"REPLACE_company\",\n  \"email\": \"{{userEmail}}\",\n  \"jobTitle\": \"REPLACE_jobTitle\",\n  \"name\": \"REPLACE_name\",\n  \"phone\": \"REPLACE_phone\",\n  \"tenantId\": \"REPLACE_TENANTID\"\n}"
             }
           },
           "response": []
@@ -1172,7 +1172,7 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/isuserincontactbook",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "No explicit *.params usage found in source. Source: apps/OpenSignServer/cloud/parsefunction/isUserInContactBook.js",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1209,10 +1209,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/updatetourstatus",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/updateTourStatus.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"ExtUserId\": \"REPLACE_EXTUSERID\",\n  \"TourStatus\": \"REPLACE_TourStatus\"\n}"
             }
           },
           "response": []
@@ -1246,10 +1246,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/updatesignaturetype",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/updatesignaturetype.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"SignatureType\": \"REPLACE_SignatureType\"\n}"
             }
           },
           "response": []
@@ -1283,10 +1283,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/updatepreferences",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/updatePreferences.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"DateFormat\": \"REPLACE_DateFormat\",\n  \"DownloadFilenameFormat\": \"sample.pdf\",\n  \"Is12HourTime\": \"REPLACE_Is12HourTime\",\n  \"IsLTVEnabled\": \"REPLACE_IsLTVEnabled\",\n  \"IsTourEnabled\": \"REPLACE_IsTourEnabled\",\n  \"NotifyOnSignatures\": \"REPLACE_NotifyOnSignatures\",\n  \"SendinOrder\": \"REPLACE_SendinOrder\",\n  \"SignatureType\": \"REPLACE_SignatureType\",\n  \"Timezone\": \"REPLACE_Timezone\"\n}"
             }
           },
           "response": []
@@ -1320,10 +1320,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/createduplicate",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: templateId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/createDuplicate.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"templateId\": \"REPLACE_TEMPLATEID\"\n}"
             }
           },
           "response": []
@@ -1357,10 +1357,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/createbatchcontact",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/createBatchContact.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"contacts\": [\n    {\n      \"name\": \"John\",\n      \"email\": \"a@example.com\"\n    }\n  ]\n}"
             }
           },
           "response": []
@@ -1394,10 +1394,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/generatecertificate",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: docId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/generateCertificatebydocId.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\"\n}"
             }
           },
           "response": []
@@ -1431,10 +1431,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/fileupload",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/fileUpload.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"url\": \"https://example.com/file.pdf\"\n}"
             }
           },
           "response": []
@@ -1468,10 +1468,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/getuserlistbyorg",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getUserListByOrg.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"organizationId\": \"REPLACE_ORGANIZATIONID\"\n}"
             }
           },
           "response": []
@@ -1505,10 +1505,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/editcontact",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/editContact.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"company\": \"REPLACE_company\",\n  \"email\": \"{{userEmail}}\",\n  \"jobTitle\": \"REPLACE_jobTitle\",\n  \"name\": \"REPLACE_name\",\n  \"phone\": \"REPLACE_phone\",\n  \"tenantId\": \"REPLACE_TENANTID\"\n}"
             }
           },
           "response": []
@@ -1542,10 +1542,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/forwarddoc",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/ForwardDoc.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\",\n  \"recipients\": \"REPLACE_recipients\"\n}"
             }
           },
           "response": []
@@ -1579,10 +1579,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/saveastemplate",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: docId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/saveAsTemplate.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\"\n}"
             }
           },
           "response": []
@@ -1616,10 +1616,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/updatetenant",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/updateTenant.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"details\": {\n    \"RequestSubject\": \"Please sign\",\n    \"RequestBody\": \"Body\"\n  }\n}"
             }
           },
           "response": []
@@ -1653,44 +1653,7 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/recreatedoc",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
-            "body": {
-              "mode": "raw",
-              "raw": "{}"
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "loginuser",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "X-Parse-Application-Id",
-                "value": "{{appId}}"
-              },
-              {
-                "key": "X-Parse-Master-Key",
-                "value": "{{masterKey}}"
-              },
-              {
-                "key": "X-Parse-Session-Token",
-                "value": "{{sessionToken}}",
-                "disabled": true
-              },
-              {
-                "key": "sessiontoken",
-                "value": "{{sessionToken}}",
-                "disabled": true
-              }
-            ],
-            "url": "{{parseBaseUrl}}/functions/loginuser",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "No explicit *.params usage found in source. Source: apps/OpenSignServer/cloud/parsefunction/recreateDocument.js",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1727,10 +1690,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/adduser",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: name, email, password, organization, team, role, tenantId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/addUser.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"name\": \"REPLACE_name\",\n  \"organization\": {\n    \"objectId\": \"REPLACE_ORG_ID\",\n    \"company\": \"Example Inc\"\n  },\n  \"password\": \"{{userPassword}}\",\n  \"role\": \"REPLACE_role\",\n  \"team\": \"REPLACE_TEAM\",\n  \"tenantId\": \"REPLACE_TENANTID\",\n  \"timezone\": \"REPLACE_timezone\"\n}"
             }
           },
           "response": []
@@ -1764,10 +1727,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/filterdocs",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/filterDocs.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"caseSensitive\": \"REPLACE_caseSensitive\",\n  \"limit\": 10,\n  \"skip\": 0\n}"
             }
           },
           "response": []
@@ -1801,10 +1764,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/senddeleterequest",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/sendDeleteUserMail.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"app\": \"REPLACE_app\"\n}"
             }
           },
           "response": []
@@ -1838,10 +1801,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/resetpassword",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: userId, password. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/resetPassword.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"password\": \"{{userPassword}}\",\n  \"userId\": \"REPLACE_USERID\"\n}"
             }
           },
           "response": []
@@ -1875,10 +1838,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/savesignature",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/saveSignature.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"id\": \"REPLACE_ID\",\n  \"initials\": \"REPLACE_initials\",\n  \"stamp\": \"REPLACE_stamp\",\n  \"title\": \"REPLACE_title\",\n  \"userId\": \"REPLACE_USERID\"\n}"
             }
           },
           "response": []
@@ -1912,10 +1875,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/managesign",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/manageSign.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"id\": \"REPLACE_ID\",\n  \"initials\": \"REPLACE_initials\",\n  \"stamp\": \"REPLACE_stamp\",\n  \"title\": \"REPLACE_title\",\n  \"userId\": \"REPLACE_USERID\"\n}"
             }
           },
           "response": []
@@ -1949,7 +1912,7 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/getdefaultsignature",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "No explicit *.params usage found in source. Source: apps/OpenSignServer/cloud/parsefunction/getSignature.js",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -1986,10 +1949,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/updateemailtemplates",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: tenantId, details. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/updateEmailTemplates.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"details\": {\n    \"RequestSubject\": \"Please sign\",\n    \"RequestBody\": \"Body\"\n  },\n  \"tenantId\": \"REPLACE_TENANTID\"\n}"
             }
           },
           "response": []
@@ -2023,10 +1986,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/triggerevent",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/triggerEvent.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"contactId\": \"REPLACE_CONTACTID\",\n  \"event\": \"REPLACE_event\"\n}"
             }
           },
           "response": []
@@ -2060,10 +2023,10 @@
               }
             ],
             "url": "{{parseBaseUrl}}/functions/setwidgetpreferences",
-            "description": "Master Key call. For user-context APIs, enable header `sessiontoken` or `X-Parse-Session-Token` with `{{sessionToken}}`.",
+            "description": "Required params: dateWidget. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/setWidgetPreferences.js",
             "body": {
               "mode": "raw",
-              "raw": "{}"
+              "raw": "{\n  \"dateWidget\": \"MM/dd/yyyy\"\n}"
             }
           },
           "response": []
@@ -2074,7 +2037,7 @@
   "variable": [
     {
       "key": "parseBaseUrl",
-      "value": "https://your-host/api/app"
+      "value": "https://your-domain/api/app"
     },
     {
       "key": "appId",
