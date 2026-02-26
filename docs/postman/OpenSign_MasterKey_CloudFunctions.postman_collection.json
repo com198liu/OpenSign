@@ -64,6 +64,30 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "templatelist",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/classes/contracts_Template?where={\"IsArchive\":{\"$ne\":true}}&order=-updatedAt&limit={{limit}}&skip={{skip}}&include=ExtUserPtr,CreatedBy,Signers,ExtUserPtr.TenantId,Bcc",
+            "description": "Template list via Parse REST classes API (Master Key). This is the practical list endpoint used to retrieve template pages. Adjust where/order/include as needed."
+          },
+          "response": []
         }
       ]
     },
@@ -2058,6 +2082,14 @@
     {
       "key": "userPassword",
       "value": "your_password"
+    },
+    {
+      "key": "limit",
+      "value": "20"
+    },
+    {
+      "key": "skip",
+      "value": "0"
     }
   ]
 }

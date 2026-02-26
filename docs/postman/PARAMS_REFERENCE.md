@@ -215,3 +215,10 @@
 ## setwidgetpreferences
 - Required (inferred/manual): `dateWidget`
 - Params seen: `dateWidget`
+
+
+## templatelist (REST classes endpoint)
+- Method: `GET`
+- URL: `{{parseBaseUrl}}/classes/contracts_Template?where={"IsArchive":{"$ne":true}}&order=-updatedAt&limit={{limit}}&skip={{skip}}&include=ExtUserPtr,CreatedBy,Signers,ExtUserPtr.TenantId,Bcc`
+- Headers: `X-Parse-Application-Id`, `X-Parse-Master-Key` (optional `X-Parse-Session-Token`)
+- Purpose: list templates with pagination.
