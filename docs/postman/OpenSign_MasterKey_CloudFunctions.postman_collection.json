@@ -1,0 +1,2095 @@
+{
+  "info": {
+    "name": "OpenSign Master Key API (Parse Cloud Functions)",
+    "_postman_id": "4d35a104-a57d-4868-a1d1-9d00a4b28f6f",
+    "description": "Includes parameter templates inferred from source. Order: health-check -> loginuser (if needed) -> target function.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "00-Start-Here",
+      "item": [
+        {
+          "name": "health-check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              }
+            ],
+            "url": "{{parseBaseUrl}}/health",
+            "description": "Must return JSON. If HTML returns, parseBaseUrl points to frontend route."
+          },
+          "response": []
+        },
+        {
+          "name": "loginuser",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/loginuser",
+            "description": "Required params: email, password. Body template includes params inferred from source code.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "templatelist",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/classes/contracts_Template?where={\"IsArchive\":{\"$ne\":true}}&order=-updatedAt&limit={{limit}}&skip={{skip}}&include=ExtUserPtr,CreatedBy,Signers,ExtUserPtr.TenantId,Bcc",
+            "description": "Template list via Parse REST classes API (Master Key). This is the practical list endpoint used to retrieve template pages. Adjust where/order/include as needed."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "01-Cloud-Functions-with-Param-Templates",
+      "item": [
+        {
+          "name": "signPdf",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/signPdf",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/pdf/PDF.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\",\n  \"isCustomCompletionMail\": \"REPLACE_isCustomCompletionMail\",\n  \"mailProvider\": \"REPLACE_mailProvider\",\n  \"pdfFile\": \"REPLACE_pdfFile\",\n  \"signature\": \"REPLACE_signature\",\n  \"userId\": \"REPLACE_USERID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "sendmailv3",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/sendmailv3",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/sendMailv3.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bcc\": \"REPLACE_bcc\",\n  \"certificatePath\": \"REPLACE_certificatePath\",\n  \"extUserId\": \"REPLACE_EXTUSERID\",\n  \"filename\": \"sample.pdf\",\n  \"from\": \"REPLACE_from\",\n  \"html\": \"REPLACE_html\",\n  \"pdfName\": \"sample.pdf\",\n  \"recipient\": \"REPLACE_recipient\",\n  \"replyto\": \"REPLACE_replyto\",\n  \"subject\": \"REPLACE_subject\",\n  \"text\": \"REPLACE_text\",\n  \"url\": \"https://example.com/file.pdf\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "usersignup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/usersignup",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/usersignup.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userDetails\": \"REPLACE_userDetails\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SendOTPMailV1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/SendOTPMailV1",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/SendMailOTPv1.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TenantId\": \"REPLACE_TENANTID\",\n  \"docId\": \"REPLACE_DOCID\",\n  \"email\": \"{{userEmail}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AuthLoginAsMail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/AuthLoginAsMail",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/AuthLoginAsMail.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"otp\": \"REPLACE_otp\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getUserId",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/getUserId",
+            "description": "Required params: username. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getUserId.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"username\": \"REPLACE_username\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getUserDetails",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/getUserDetails",
+            "description": "Required params: email, userId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getUserDetails.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"userId\": \"REPLACE_USERID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getDocument",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/getDocument",
+            "description": "Required params: docId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getDocument.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\",\n  \"include\": \"REPLACE_include\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getDrive",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/getDrive",
+            "description": "Required params: docId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getDrive.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\",\n  \"limit\": 10,\n  \"skip\": 0\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getReport",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/getReport",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getReport.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"limit\": 10,\n  \"reportId\": \"REPLACE_REPORTID\",\n  \"searchTerm\": \"REPLACE_searchTerm\",\n  \"skip\": 0\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getTemplate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/getTemplate",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/GetTemplate.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templateId\": \"REPLACE_TEMPLATEID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "verifyemail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/verifyemail",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/VerifyEmail.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"otp\": \"REPLACE_otp\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getsignedurl",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/getsignedurl",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getSignedUrl.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\",\n  \"templateId\": \"REPLACE_TEMPLATEID\",\n  \"url\": \"https://example.com/file.pdf\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "batchdocuments",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/batchdocuments",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/createBatchDocs.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Documents\": [\n    {\n      \"Name\": \"Doc1\"\n    }\n  ]\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "linkcontacttodoc",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/linkcontacttodoc",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/linkContactToDoc.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company\": \"REPLACE_company\",\n  \"docId\": \"REPLACE_DOCID\",\n  \"email\": \"{{userEmail}}\",\n  \"jobTitle\": \"REPLACE_jobTitle\",\n  \"name\": \"REPLACE_name\",\n  \"phone\": \"REPLACE_phone\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "isextenduser",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/isextenduser",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/isextenduser.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getlogobydomain",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/getlogobydomain",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/GetLogoByDomain.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"domain\": \"REPLACE_domain\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "addadmin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/addadmin",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/AddAdmin.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userDetails\": \"REPLACE_userDetails\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "checkadminexist",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/checkadminexist",
+            "description": "No explicit *.params usage found in source. Source: apps/OpenSignServer/cloud/parsefunction/CheckAdminExist.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateuserasadmin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/updateuserasadmin",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/UpdateExistUserAsAdmin.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"masterkey\": \"REPLACE_masterkey\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "newsletter",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/newsletter",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/Newsletter.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"domain\": \"REPLACE_domain\",\n  \"email\": \"{{userEmail}}\",\n  \"name\": \"REPLACE_name\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getteams",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/getteams",
+            "description": "Required params: active. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getTeams.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"active\": true\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getcontact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/getcontact",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getContact.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactId\": \"REPLACE_CONTACTID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updatecontacttour",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/updatecontacttour",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/updateContactTour.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactId\": \"REPLACE_CONTACTID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "declinedoc",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/declinedoc",
+            "description": "Required params: docId, userId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/declinedocument.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\",\n  \"reason\": \"REPLACE_reason\",\n  \"userId\": \"REPLACE_USERID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "gettenant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/gettenant",
+            "description": "Required params: contactId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getTenant.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactId\": \"REPLACE_CONTACTID\",\n  \"userId\": \"REPLACE_USERID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getsigners",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/getsigners",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getSigners.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"search\": \"REPLACE_search\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "savefile",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/savefile",
+            "description": "Required params: fileName, fileBase64. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/saveFile.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileBase64\": \"data:application/pdf;base64,REPLACE_BASE64\",\n  \"fileName\": \"sample.pdf\",\n  \"id\": \"REPLACE_ID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "savecontact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/savecontact",
+            "description": "Required params: name, phone, tenantId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/savecontact.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company\": \"REPLACE_company\",\n  \"email\": \"{{userEmail}}\",\n  \"jobTitle\": \"REPLACE_jobTitle\",\n  \"name\": \"REPLACE_name\",\n  \"phone\": \"REPLACE_phone\",\n  \"tenantId\": \"REPLACE_TENANTID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "isuserincontactbook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/isuserincontactbook",
+            "description": "No explicit *.params usage found in source. Source: apps/OpenSignServer/cloud/parsefunction/isUserInContactBook.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updatetourstatus",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/updatetourstatus",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/updateTourStatus.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ExtUserId\": \"REPLACE_EXTUSERID\",\n  \"TourStatus\": \"REPLACE_TourStatus\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updatesignaturetype",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/updatesignaturetype",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/updatesignaturetype.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"SignatureType\": \"REPLACE_SignatureType\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updatepreferences",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/updatepreferences",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/updatePreferences.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"DateFormat\": \"REPLACE_DateFormat\",\n  \"DownloadFilenameFormat\": \"sample.pdf\",\n  \"Is12HourTime\": \"REPLACE_Is12HourTime\",\n  \"IsLTVEnabled\": \"REPLACE_IsLTVEnabled\",\n  \"IsTourEnabled\": \"REPLACE_IsTourEnabled\",\n  \"NotifyOnSignatures\": \"REPLACE_NotifyOnSignatures\",\n  \"SendinOrder\": \"REPLACE_SendinOrder\",\n  \"SignatureType\": \"REPLACE_SignatureType\",\n  \"Timezone\": \"REPLACE_Timezone\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "createduplicate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/createduplicate",
+            "description": "Required params: templateId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/createDuplicate.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templateId\": \"REPLACE_TEMPLATEID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "createbatchcontact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/createbatchcontact",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/createBatchContact.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contacts\": [\n    {\n      \"name\": \"John\",\n      \"email\": \"a@example.com\"\n    }\n  ]\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "generatecertificate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/generatecertificate",
+            "description": "Required params: docId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/generateCertificatebydocId.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "fileupload",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/fileupload",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/fileUpload.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://example.com/file.pdf\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getuserlistbyorg",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/getuserlistbyorg",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/getUserListByOrg.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organizationId\": \"REPLACE_ORGANIZATIONID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "editcontact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/editcontact",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/editContact.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company\": \"REPLACE_company\",\n  \"email\": \"{{userEmail}}\",\n  \"jobTitle\": \"REPLACE_jobTitle\",\n  \"name\": \"REPLACE_name\",\n  \"phone\": \"REPLACE_phone\",\n  \"tenantId\": \"REPLACE_TENANTID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "forwarddoc",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/forwarddoc",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/ForwardDoc.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\",\n  \"recipients\": \"REPLACE_recipients\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "saveastemplate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/saveastemplate",
+            "description": "Required params: docId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/saveAsTemplate.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docId\": \"REPLACE_DOCID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updatetenant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/updatetenant",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/updateTenant.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": {\n    \"RequestSubject\": \"Please sign\",\n    \"RequestBody\": \"Body\"\n  }\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "recreatedoc",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/recreatedoc",
+            "description": "No explicit *.params usage found in source. Source: apps/OpenSignServer/cloud/parsefunction/recreateDocument.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "adduser",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/adduser",
+            "description": "Required params: name, email, password, organization, team, role, tenantId. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/addUser.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"name\": \"REPLACE_name\",\n  \"organization\": {\n    \"objectId\": \"REPLACE_ORG_ID\",\n    \"company\": \"Example Inc\"\n  },\n  \"password\": \"{{userPassword}}\",\n  \"role\": \"REPLACE_role\",\n  \"team\": \"REPLACE_TEAM\",\n  \"tenantId\": \"REPLACE_TENANTID\",\n  \"timezone\": \"REPLACE_timezone\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "filterdocs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/filterdocs",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/filterDocs.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"caseSensitive\": \"REPLACE_caseSensitive\",\n  \"limit\": 10,\n  \"skip\": 0\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "senddeleterequest",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/senddeleterequest",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/sendDeleteUserMail.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"app\": \"REPLACE_app\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "resetpassword",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/resetpassword",
+            "description": "Required params: userId, password. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/resetPassword.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"{{userPassword}}\",\n  \"userId\": \"REPLACE_USERID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "savesignature",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/savesignature",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/saveSignature.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"REPLACE_ID\",\n  \"initials\": \"REPLACE_initials\",\n  \"stamp\": \"REPLACE_stamp\",\n  \"title\": \"REPLACE_title\",\n  \"userId\": \"REPLACE_USERID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "managesign",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/managesign",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/manageSign.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"REPLACE_ID\",\n  \"initials\": \"REPLACE_initials\",\n  \"stamp\": \"REPLACE_stamp\",\n  \"title\": \"REPLACE_title\",\n  \"userId\": \"REPLACE_USERID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getdefaultsignature",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/getdefaultsignature",
+            "description": "No explicit *.params usage found in source. Source: apps/OpenSignServer/cloud/parsefunction/getSignature.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateemailtemplates",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/updateemailtemplates",
+            "description": "Required params: tenantId, details. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/updateEmailTemplates.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": {\n    \"RequestSubject\": \"Please sign\",\n    \"RequestBody\": \"Body\"\n  },\n  \"tenantId\": \"REPLACE_TENANTID\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "triggerevent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/triggerevent",
+            "description": "Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/triggerEvent.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactId\": \"REPLACE_CONTACTID\",\n  \"event\": \"REPLACE_event\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "setwidgetpreferences",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Parse-Application-Id",
+                "value": "{{appId}}"
+              },
+              {
+                "key": "X-Parse-Master-Key",
+                "value": "{{masterKey}}"
+              },
+              {
+                "key": "X-Parse-Session-Token",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              },
+              {
+                "key": "sessiontoken",
+                "value": "{{sessionToken}}",
+                "disabled": true
+              }
+            ],
+            "url": "{{parseBaseUrl}}/functions/setwidgetpreferences",
+            "description": "Required params: dateWidget. Body template includes params inferred from source code. Source: apps/OpenSignServer/cloud/parsefunction/setWidgetPreferences.js",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateWidget\": \"MM/dd/yyyy\"\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "parseBaseUrl",
+      "value": "https://your-domain/api/app"
+    },
+    {
+      "key": "appId",
+      "value": "opensign"
+    },
+    {
+      "key": "masterKey",
+      "value": "YOUR_MASTER_KEY"
+    },
+    {
+      "key": "sessionToken",
+      "value": ""
+    },
+    {
+      "key": "userEmail",
+      "value": "user@example.com"
+    },
+    {
+      "key": "userPassword",
+      "value": "your_password"
+    },
+    {
+      "key": "limit",
+      "value": "20"
+    },
+    {
+      "key": "skip",
+      "value": "0"
+    }
+  ]
+}
